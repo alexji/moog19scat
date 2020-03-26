@@ -8,7 +8,6 @@ c******************************************************************************
       include 'Atmos.com'
       include 'Linex.com'
       include 'Dummy.com'
-      include 'Source.com'
       real*8 dinteg(200)
       data waveold /0.0/                                   
 
@@ -16,7 +15,6 @@ c******************************************************************************
 c*****set an arbitrary maximum # of wavelength points to compute 
 c     the line profile
       maxsteps = 100
-
 
 
 c*****get started; calculate an initial step size; wavestep only is 
@@ -31,23 +29,17 @@ c*****used in synpop
       endif
       storig = st1
 
+
 c*****calculate continuous opacity and intensity/flux at line wavelength 
       wave = wave1(lim1)                                                
-c*****APJ have to call this for every line when using scattering!
-      if ((scatopt .eq. 1) .or. (abs(wave-waveold) .gt. 30.)) then
+      if (abs(wave-waveold) .gt. 30.) then
          waveold = wave
          call opacit(2,wave)     
          if (imode.ne.2 .and. modprintopt.ge.2) 
      .      write(nf1out,1002) wave,(kaplam(i),i=1,ntau)
-         if (scatopt .eq. 0) then
-            call cdcalc(1)
-            first = 0.4343*cd(1)
-            flux = rinteg(xref,cd,dummy1,ntau,first)
-         else
-            call cdcalc_JS(1)
-c*****APJ I think this is right based on mirroring the 2011 code
-            flux = Flux_cont
-         endif
+         call cdcalc(1)
+         first = 0.4343*cd(1)
+         flux = rinteg(xref,cd,dummy1,ntau,first)
          if (imode .ne. 2) then
             if (iunits .eq. 1) then
                write (nf1out,1003) 1.d-4*wave,flux
@@ -57,18 +49,14 @@ c*****APJ I think this is right based on mirroring the 2011 code
          endif
       endif
 
+
 c*****check the wavelength step size; expand/contract as necessary
       if (wavestep .eq. 0.) then
          wave = wave1(lim1)
          call taukap
-         if (scatopt .eq. 0) then
-            call cdcalc(2)
-            first = 0.4343*cd(1)
-            d(1) = rinteg(xref,cd,dummy1,ntau,first)
-         else
-            call cdcalc_JS(2)
-            d(1) = 0.4343*adepth
-         endif
+         call cdcalc(2)
+         first = 0.4343*cd(1)
+         d(1) = rinteg(xref,cd,dummy1,ntau,first)
          do k=1,30
             if (k .eq. 30) then
                write (*,1010) wave
@@ -76,14 +64,9 @@ c*****check the wavelength step size; expand/contract as necessary
             endif
             wave = wave1(lim1) + 5.*st1
             call taukap
-            if (scatopt .eq. 0) then
-               call cdcalc(2)
-               first = 0.4343*cd(1)
-               d(2) = rinteg(xref,cd,dummy1,ntau,first)       
-            else
-               call cdcalc_JS(2)
-               d(2) = 0.4343*adepth
-            endif
+            call cdcalc(2)
+            first = 0.4343*cd(1)
+            d(2) = rinteg(xref,cd,dummy1,ntau,first)       
             d2d1 = d(2)/d(1)
             if     (d2d1 .le. 0.2) then
                st1 = st1/1.5
@@ -110,18 +93,9 @@ c     until the depth is very small in the line wing
          dellam(n) =  (n-1)*st1
          wave = wave1(lim1) + dellam(n)
          call taukap
-         if (scatopt .eq. 0) then
-            call cdcalc(2)
-            first = 0.4343*cd(1)
-            d(n) = rinteg(xref,cd,dummy1,ntau,first)       
-         else
-            call cdcalc_JS(2)
-            d(n) = adepth
-c APJ again not sure why this is true but matching JS 2011 version
-            do i=1,ntau
-               cd(i) = adepth
-            enddo
-         endif
+         call cdcalc(2)
+         first = 0.4343*cd(1)
+         d(n) = rinteg(xref,cd,dummy1,ntau,first)       
          if (linprintopt.ge.3 .and. n.eq.1 .and. imode.eq.2) then
             do i=1,ntau
                dummy1(i) = xref(i)*cd(i)
@@ -202,6 +176,7 @@ c*****format statements
 1010  format ('CANNOT DECIDE ON LINE WAVELENGTH ',
      .        'STEP SIZE FOR', f10.2, '   I QUIT!')
 1011  format ('original and final wavelength step size: ', 2f8.4)
+
       end                                                               
 
 
