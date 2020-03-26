@@ -17,20 +17,17 @@ OBJECTS = Abfind.o Abpop.o Abunplot.o Batom.o Begin.o Binary.o \
 	Opacit.o Opacmetals.o Opacscat.o Params.o Partfn.o \
 	Partnew.o Plotit.o Plotremember.o Pltabun.o Pltcog.o \
 	Pltflux.o Pltspec.o Pointcurs.o Prinfo.o Putasci.o Readobs.o \
-	Rinteg.o Smooth.o Specplot.o Stats.o Sunder.o Synpop.o Synspec.o \
-	Synth.o Tablepop.o Taukap.o Total.o Trudamp.o Ucalc.o Vargauss.o \
-	Vmacro.o Voigt.o Wavecalc.o Weedout.o Writenumber.o \
-	Sourcefunc_scat_cont.o AngWeight.o \
-	Sourcefunc_scat_line.o Cdcalc_JS.o
-
-
+        Rinteg.o Setmols.o Smooth.o Specplot.o Stats.o Sunder.o Synpop.o \
+        Synspec.o Synth.o Tablepop.o Taukap.o Total.o Trudamp.o Ucalc.o \
+        Vargauss.o Vmacro.o Voigt.o Wavecalc.o Weedout.o Writenumber.o \
+        Sourcefunc_scat_cont.o AngWeight.o \
+        Sourcefunc_scat_line.o Cdcalc_JS.o
 
 #     here are the common files
 COMMON =  Atmos.com Dummy.com Equivs.com Factor.com Kappa.com Linex.com \
 	Mol.com Multistar.com Obspars.com Plotval.com Pstuff.com \
 	Quants.com Multimod.com Dampdat.com Source.com
 
-CC = cc
 FC = g77 -w
 
 # the following lines point to some needed libraries
@@ -45,10 +42,6 @@ all: MOOG ;
 	@echo make sure that you have entered the proper parameters
 	@echo for MOOG into the FORTRAN source driver
 	@echo routine Moog.f !!!!!!!!!!!!
-	@echo
-	@echo NOTE: the isotop driver has been eliminated;
-	@echo your synthesis needs for elemental and isotopic
-	@echo abundances now can be handled with the synth driver
 	@echo
 	@echo -----------------------------------------------------------------
 
